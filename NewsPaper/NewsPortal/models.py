@@ -41,6 +41,9 @@ class Post(models.Model):
     
     def prewiew(self):
         return print(self.text[0:123] + '...')
+    
+    def __str__(self):
+        return f'{self.headline.title()}, {self.text}'
 
 class PostCategory(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)

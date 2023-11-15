@@ -1,0 +1,15 @@
+{% extends 'flatpages/default.html' %} 
+
+{% load custom_filtres %}
+
+{% block title %}
+news
+{% endblock title %}
+ 
+{% block content %}
+<h1>{{ news.headline|censor }}</h1>
+<h6>Новость была опубликована: {{ news.time_create }}</h6>
+<hr>
+<h2>{{ news.text|censor }}</h2>
+
+{% endblock content %}
