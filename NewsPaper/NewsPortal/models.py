@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils.translation import gettext_lazy as _ 
 from django.urls import reverse
-
+from allauth.account.forms import SignupForm
 
 class Author(models.Model):
     User = models.OneToOneField(User, on_delete=models.CASCADE)
