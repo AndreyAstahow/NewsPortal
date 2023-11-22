@@ -9,7 +9,11 @@ news
 {% block content %}
 <h1>{{ news.headline|censor }}</h1>
 <h6> Запись[{{ object.post_class }}] была опубликована: {{ news.time_create }}</h6>
+<h6>Запись из категории {{ object.category.name }}</h6>
+<h6>Подписаться на рассылку из этой категории: <input type="submit", value="Подписаться"></h6>
 <hr>
 <h2>{{ news.text|censor }}</h2>
+<hr>
+
 
 {% endblock content %}

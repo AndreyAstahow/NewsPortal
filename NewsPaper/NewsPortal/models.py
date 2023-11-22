@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _ 
 from django.urls import reverse
-from allauth.account.forms import SignupForm
+
 
 class Author(models.Model):
     User = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -14,6 +14,7 @@ class Author(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=24, unique=True)
+    subscribers = models.ManyToManyField(User)
 
 article = 'article'
 news = 'news'
@@ -48,6 +49,7 @@ class Post(models.Model):
     
     def get_absolute_url(self):
         return reverse('news_detail', args=[str(self.id)])
+
 
 class PostCategory(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)

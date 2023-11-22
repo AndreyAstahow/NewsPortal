@@ -3,6 +3,7 @@ from django.views.generic import (
     )
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.shortcuts import render, reverse, redirect
 
 from .models import Post
 from .filters import  PostFilter
@@ -30,6 +31,8 @@ class PostDetail(DetailView):
     ordering = 'author_id'
     template_name = 'flatpages/news_split.html'
     context_object_name = 'news'
+
+
 
 class NewsCreate(PermissionRequiredMixin, CreateView):
     permission_required = ('NewsPortal.add_post')
