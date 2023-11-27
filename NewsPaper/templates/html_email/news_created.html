@@ -6,8 +6,9 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>{{ news.headline }}</h2>
-    <p>{{ Post.text|truncatechars:50 }}</p>
+    <h2>Привет! Новая статья в твоем любимом разделе!</h2>
+    <p>{{ text|truncatechars:200 }}</p>
+    <h2><a href="{{ link }}">Читать статью полностью</a></h2>
 
 </body>
 </html>
