@@ -1,20 +1,12 @@
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, m2m_changed
 from django.template.loader import render_to_string
 
-from .models import Post
+from .models import PostCategory
+from .tasks import new_post_send_email
 
-@receiver(post_save, sender=Post)
-def news_create(sender, instance, created, **kwargs):
-        html_content = render_to_string(
-                'html_email/news_created.html',
-        )
-        msg = EmailMultiAlternatives(
-            subject = f'Привет! В твоем любимом разделе новая новость!',
-            body = f'',
-            from_email='andrey.astahow2016@yandex.ru',
-            to = ['astakhoff.andrejj.yandex.ru208@gmail.com']
-        )
-        msg.attach_alternative(html_content, 'text/html')
-        msg.send()
+@receiver(m2m_changed, sender=PostCategory)
+def post_send_mail(sender, instance, **kwargs):
+    if kwargs['action'] == 'post_add':
+        new_post_send_email(instance.pk)

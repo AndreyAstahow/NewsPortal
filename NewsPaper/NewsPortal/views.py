@@ -3,11 +3,13 @@ from django.views.generic import (
     )
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import render, reverse, redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
-from .models import Post
+from .models import Post, Category
 from .filters import  PostFilter
 from .forms import PostForm
+from .tasks import new_post_send_email
 
 class PostList(ListView):
     model = Post
@@ -43,7 +45,10 @@ class NewsCreate(PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         news = form.save(commit=False)
         news.post_class = 'news'
+        news.save()
+        new_post_send_email.delay(form.instance.pk)
         return super().form_valid(form)
+
 
 class NewsUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = ('NewsPortal.change_post')
@@ -65,6 +70,8 @@ class ArticlesCreate(PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         news = form.save(commit=False)
         news.post_class = 'article'
+        news.save()
+        new_post_send_email.delay(form.instance.pk)
         return super().form_valid(form)
     
 class ArticleUpdate(PermissionRequiredMixin, UpdateView):
@@ -77,3 +84,23 @@ class ArticlesDelete(DeleteView):
     model = Post
     template_name = 'flatpages/post_delete.html'
     success_url = reverse_lazy('news_list')
+
+class CategoryList(ListView):
+    model = Category
+    template_name = 'flatpages/category.html'
+    ordering = 'id'
+    context_object_name = 'category'
+
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(pk=pk)
+    category.subscribers.add(user)
+    return redirect('category_list')
+
+@login_required
+def unsubscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(pk=pk)
+    category.subscribers.remove(user)
+    return redirect('category_list')
