@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from django.core.cache import cache
 
 from .models import Post, Category
 from .filters import  PostFilter
@@ -34,7 +35,12 @@ class PostDetail(DetailView):
     template_name = 'flatpages/news_split.html'
     context_object_name = 'news'
 
-
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'post-{self.kwargs["pk"]}', None)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+        return obj
 
 class NewsCreate(PermissionRequiredMixin, CreateView):
     permission_required = ('NewsPortal.add_post')
